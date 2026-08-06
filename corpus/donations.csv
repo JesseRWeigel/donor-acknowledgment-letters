@@ -1,0 +1,15 @@
+donor_name,date,amount,kind,description,goods_value,goods_description,intangible_religious,vehicle_vin,vehicle_gross_proceeds
+Sam Ito,2026-05-09,500.00,cash,,,,no,,
+Dana Okonkwo,2026-02-14,100.00,cash,,,,no,,
+Priya Raman,2026-03-21,100.00,cash,,40.00,one dinner at the spring gala,no,,
+Priya Raman,2026-09-12,60.00,cash,,25.00,one dinner at the autumn supper,no,,
+Marcus Bell,2026-06-30,1000.00,cash,,15.00,a canvas tote bag,no,,
+Lena Fischer,2026-11-02,0.00,non-cash,40 winter coats in assorted adult sizes,,,no,,
+Tomas Reyes,2026-04-18,0.00,vehicle,a 2011 Honda Civic sedan,,,no,1HGFA16511L000000,1450.00
+Ruth Adeyemi,2026-01-11,300.00,cash,,20.00,a place at the parish supper,yes,,
+Dana Okonkwo,2026-05-14,100.00,cash,,,,no,,
+Dana Okonkwo,2026-08-14,100.00,cash,,,,no,,
+Dana Okonkwo,2026-11-14,100.00,cash,,,,no,,
+Jo Lindqvist,2026-07-04,250.00,cash,,,,no,,
+Amara Sesay,2026-07-19,75.00,cash,,30.00,two raffle tickets,no,,
+José Martí Cruz,2026-10-01,425.00,cash,,,,no,,

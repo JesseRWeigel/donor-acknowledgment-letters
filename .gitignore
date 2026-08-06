@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+out/
+_measure*/
+_awkward/
+_ind/
+.playwright-mcp/

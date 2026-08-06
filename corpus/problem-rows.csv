@@ -1,0 +1,8 @@
+donor_name,date,amount,kind,description,goods_value,goods_description
+Ann Meyer,,300.00,cash,,,
+Bo Tran,2026-03-02,three hundred,cash,,,
+Cal Ortiz,2026-03-03,0.00,non-cash,,,
+Di Novak,2026-03-04,200.00,cash,,50.00,
+Eli Park,2026-03-05,40.00,cash,,90.00,a framed print
+,2026-03-06,500.00,cash,,,
+Gia Russo,03/07/2026,150.00,cash,,,

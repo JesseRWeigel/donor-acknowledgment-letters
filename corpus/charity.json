@@ -1,0 +1,8 @@
+{
+  "_note": "Fictional. The EIN prefix 00 is never issued by the IRS, so this cannot collide with a real organisation.",
+  "name": "Millrace Community Food Bank",
+  "ein": "00-1234567",
+  "address": "148 Mill Street, Millrace, IL 60000",
+  "signatory": "A. Chen",
+  "signatory_title": "Executive Director"
+}
