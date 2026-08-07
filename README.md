@@ -123,6 +123,7 @@ $ bash scripts/verify.sh
   ok   the missing sentence was found and the command exited non-zero
 == 7. the independent checker agrees, and imports nothing from the package
   ok     import graph of scripts/check_independent.py covers 1 file(s) and reaches none of donorack: scripts/check_independent.py
+  ok   the prover rejects both a relative import into the package and a computed import name, so its verdict above is informative
   ok   32 independent checks, 0 failed
 == 8. year-end summaries
   ok   four gifts of $100 total $400 and the summary says it is not an acknowledgment
@@ -180,8 +181,15 @@ leak in the scanner.
 `scripts/check_independent.py` reads the donation CSV and the finished letters with its own
 parsing and applies the rules **retyped from Publication 1771**, importing nothing from `donorack`.
 Independence is proved rather than asserted: `scripts/check_imports.py` walks the import graph with
-Python's `ast` module and fails on any path reaching the package, on relative imports, and on a
-dynamic import with a computed name, which cannot be followed and so cannot be cleared.
+Python's `ast` module and fails on any path reaching the package, and on a dynamic import with a
+computed name, which cannot be followed and so cannot be cleared.
+
+**The prover is itself shown able to fail.** Verify plants two probes in `scripts/` and requires
+both to be rejected. The first version of the prover would have passed one of them: it named a
+relative import after its containing directory, so `from ..donorack import audit` spelled itself
+`donor-acknowledgment-letters.donorack`, matched no forbidden top-level name, resolved to no file,
+and was neither flagged nor followed. A prover that always exits 0 clears the independence check
+and establishes nothing.
 
 It also compares all 189 Helvetica and 189 Helvetica-Bold widths against the AFM copy inside
 pdfminer, a third party that shares no code with this project.

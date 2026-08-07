@@ -82,6 +82,23 @@ echo "== 7. the independent checker agrees, and imports nothing from the package
 if python3 scripts/check_imports.py scripts/check_independent.py donorack >"$TMP/graph.log" 2>&1
 then ok "$(tail -1 "$TMP/graph.log")"
 else bad "the independent checker is not independent"; cat "$TMP/graph.log"; fi
+
+# The prover has to be shown able to FAIL. A version that always exits 0 clears the check above
+# and proves nothing, and the first version here did exactly that for a relative import: it named
+# the module after the containing directory, so `from ..donorack import audit` spelled itself
+# `donor-acknowledgment-letters.donorack`, matched no forbidden top-level name, resolved to no
+# file, and was neither flagged nor followed. Both probes live in scripts/ because that is where a
+# real independent checker sits, and a probe outside the tree resolves differently.
+printf 'from ..donorack import audit\n' > scripts/_probe_relative.py
+printf 'import importlib\nm = importlib.import_module("donor" + "ack")\n' > scripts/_probe_dynamic.py
+probes_ok=1
+python3 scripts/check_imports.py scripts/_probe_relative.py donorack >/dev/null 2>&1 \
+  && { bad "a relative import reaching the package was not caught"; probes_ok=0; }
+python3 scripts/check_imports.py scripts/_probe_dynamic.py donorack >/dev/null 2>&1 \
+  && { bad "a computed dynamic import name was not refused"; probes_ok=0; }
+rm -f scripts/_probe_relative.py scripts/_probe_dynamic.py
+[ "$probes_ok" -eq 1 ] && ok "the prover rejects both a relative import into the package and a \
+computed import name, so its verdict above is informative"
 if python3 scripts/check_independent.py "$TMP/out" corpus/donations.csv >"$TMP/ind.log" 2>&1; then
   ok "$(grep -oE '[0-9]+ independent checks, [0-9]+ failed' "$TMP/ind.log")"
 else bad "the independent checker disagrees"; grep -E 'FAIL' "$TMP/ind.log" | head -20; fi

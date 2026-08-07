@@ -2,9 +2,17 @@
 
 An independent checker is only independent if it shares no code with the thing it checks, and
 `grep -L donorack` is satisfied by a file that never mentions the name and calls
-`importlib.import_module("donor" + "ack")`, and is defeated by a file that mentions it only in a
+`importlib.import_module("skill" + "lint")`, and is defeated by a file that mentions it only in a
 comment. So this walks the graph: parse the file, collect its imports, follow the ones that
 resolve to local source files, and repeat.
+
+A relative import is resolved to a PATH before it is judged. Naming it from the containing
+directory, which was the first version here, misses `from ..donorack import checks` entirely:
+that spells itself `donor-acknowledgment-letters.checks` after the directory, matches no forbidden top-level name,
+and resolves to no file, so it is neither flagged nor followed.
+
+A computed import name fails the check. It cannot be followed, so independence cannot be proved,
+and an unprovable claim reported as proven is the failure this whole script exists to prevent.
 
 Usage: python3 scripts/check_imports.py <file> <forbidden-package> [...]
 """
@@ -15,7 +23,7 @@ import pathlib
 import sys
 
 
-def imports_of(path: pathlib.Path) -> set[str]:
+def imports_of(path: pathlib.Path, root: pathlib.Path) -> set[str]:
     """Every module name this file imports, including inside functions and try blocks."""
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     found: set[str] = set()
@@ -23,13 +31,8 @@ def imports_of(path: pathlib.Path) -> set[str]:
         if isinstance(node, ast.Import):
             found.update(a.name for a in node.names)
         elif isinstance(node, ast.ImportFrom):
-            # A relative import has no module of its own to name; resolve it against the file.
             if node.level:
-                base = path.parent
-                for _ in range(node.level - 1):
-                    base = base.parent
-                prefix = ".".join(base.parts[-1:])
-                found.add(f"{prefix}.{node.module}" if node.module else prefix)
+                found.add(relative_name(path, root, node.level, node.module))
             elif node.module:
                 found.add(node.module)
         elif isinstance(node, ast.Call):
@@ -43,6 +46,25 @@ def imports_of(path: pathlib.Path) -> set[str]:
                 else:
                     found.add("<computed>")
     return found
+
+
+def relative_name(path: pathlib.Path, root: pathlib.Path, level: int, module: str | None) -> str:
+    """`from ..pkg import x` inside scripts/, as the dotted name `pkg`.
+
+    Resolved through the filesystem so that climbing out of the importing directory lands where
+    Python would land, rather than where the directory's own name suggests.
+    """
+    base = path.parent
+    for _ in range(level - 1):
+        base = base.parent
+    if module:
+        base = base.joinpath(*module.split("."))
+    try:
+        parts = base.resolve().relative_to(root.resolve()).parts
+    except ValueError:
+        # Above the project root. Nothing there can be the package under test.
+        return "<outside>"
+    return ".".join(parts) if parts else "<outside>"
 
 
 def resolve(module: str, root: pathlib.Path) -> pathlib.Path | None:
@@ -80,7 +102,7 @@ def main(argv):
         if path in seen:
             continue
         seen.add(path)
-        for module in sorted(imports_of(path)):
+        for module in sorted(imports_of(path, root)):
             if module == "<computed>":
                 computed.append(show(path, root))
                 continue
