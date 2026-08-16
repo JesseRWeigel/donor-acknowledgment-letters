@@ -4,6 +4,8 @@ Generates IRS-compliant donor acknowledgment letters from a donation CSV, as tex
 plus year-end summary statements. It also **audits letters a charity already sent**, which is the
 part worth having.
 
+**[Every case decided, and the letters it writes →](https://jesserweigel.github.io/donor-acknowledgment-letters/)**
+
 A substantiation letter is a legal instrument. If it is missing a required sentence, the donor's
 deduction can be disallowed on audit. The person who loses is the donor, years later, with no way
 to obtain a corrected letter, because the rule requires the acknowledgment to be contemporaneous.
